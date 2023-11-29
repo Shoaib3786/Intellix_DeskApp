@@ -16,9 +16,11 @@ from encryptFiles import encryptCSV
 from decryptFiles import decryptCSV
 import subprocess
 import traceback
+from hitApi_buttonTest import APIClientWidget
 
 # Global variable
 db_df = None
+
 
 ##### Display Recognised Image pop #####
 class CustomImageDialog(QDialog):
@@ -136,8 +138,7 @@ class RecognizedImageDialog(QDialog):
 
         # painter.end()
 
-
-##### Intro Screen - Database code setup##### 
+# Intro Screen - Client's code enter
 class StartDialog(QDialog):
     def __init__(self, parent=None):
         super(StartDialog, self).__init__(parent)
@@ -185,10 +186,8 @@ class StartDialog(QDialog):
         
         self.accept()  # Close the dialog if needed
 
-
-##### Database setup backend code #####
+# Database setup
 class DatabaseSetup():
-    
     def __init__(self, clientCode):
 
         global db_df
@@ -333,13 +332,19 @@ class DatabaseSetup():
         except Exception as e:
             print("Exception in GetStudentDB_csv() is: ",e) 
 
-
+# MainWindow
 class MainWindow(QWidget):
     
     def __init__(self):
 
         super(MainWindow, self).__init__()
+
+        # [REPLACE THESE NUMBERS WITH YOUR ORIGINAL CAMERA CHANNELS]
+        self.number_list = range(1, 13)  # Replace this with your list of numbers
         
+        
+        self.current_index = 0
+
         global db_df  # for accesing the CSV file
 
         self.db_directory = os.path.join(FinalBasic_path,'db_picsFolder')
@@ -348,22 +353,66 @@ class MainWindow(QWidget):
         self.FeedLabel = QLabel()
         self.VBL.addWidget(self.FeedLabel)
 
+        self.HBL = QHBoxLayout()
+
+        self.ButtonUP = QPushButton('Cam-Controller')
+        self.ButtonUP.clicked.connect(self.movementFeed)
+        self.HBL.addWidget(self.ButtonUP, 0)
+
+        self.MovementFeedWidget = QWidget()
+        self.MovementFeedWidget.setVisible(False)
+        self.MovementFeedLayout = QVBoxLayout(self.MovementFeedWidget)
+        self.MovementFeedLayout.addWidget(QLabel("Cam-Controller Content"))
+
+        self.VBL.addLayout(self.HBL)
+        self.VBL.addWidget(self.MovementFeedWidget)
+
+
         self.CaptureBTN = QPushButton("Capture")
-        self.CaptureBTN.clicked.connect(self.captureFrame)
-        self.VBL.addWidget(self.CaptureBTN)
+        self.CaptureBTN.clicked.connect(lambda: self.captureFrame(capture=True))
+        self.HBL.addWidget(self.CaptureBTN, 0)
+
+        self.SwitchBTN = QPushButton("Switch camera")
+        self.SwitchBTN.clicked.connect(lambda: self.captureFrame(capture=False))
+        self.HBL.addWidget(self.SwitchBTN, 0)
 
         self.CancelBTN = QPushButton("Cancel")
         self.CancelBTN.clicked.connect(self.CancelFeed)
-        self.VBL.addWidget(self.CancelBTN)
+        self.HBL.addWidget(self.CancelBTN, 0)
 
-        self.Worker = Worker(parent=self)
+        self.VBL.addLayout(self.HBL)
 
+        self.url= 'rtsp://admin:admin@192.168.1.163:554/live/av0'
+        self.videoChannel = cv2.VideoCapture(self.url)
+        self.Worker = Worker(self.videoChannel, parent=self)
+        
         self.Worker.start()
         self.Worker.ImageUpdate.connect(self.ImageUpdateSlot)
         self.recognized_image_dialog = None
         self.setLayout(self.VBL)
 
-        # self.showMaximized()
+
+    def toggleMovementFeed(self):
+        self.MovementFeedWidget.setVisible(not self.MovementFeedWidget.isVisible())
+        self.MovementFeedWidget.raise_()  # Bring the Cam-Controller Widget to the front
+
+
+    def switchButton(self):
+         
+        if self.current_index < len(self.number_list):
+            # current_number = self.number_list[self.current_index]
+
+            url = 'rtsp://admin:admin@192.168.1.163:554/live/av0'
+
+            # print('current_number: ', current_number)
+            # print('url: ', url)
+            # self.label.setText(f'Current Number: {current_number}')
+            self.videoChannel = cv2.VideoCapture(url)
+            self.current_index += 1
+        
+        else: pass
+            # self.label.setText('No more numbers.')
+
 
     def ImageUpdateSlot(self, Image):
         self.FeedLabel.setPixmap(QPixmap.fromImage(Image))
@@ -381,7 +430,6 @@ class MainWindow(QWidget):
             
             self.recognized_image_dialog.show()
 
-        
         else:
             self.recognized_image_dialog = RecognizedImageDialog(image_np, stud_info=self.stud_dic_results, parent=self)
             
@@ -510,10 +558,6 @@ class MainWindow(QWidget):
 
         try:
 
-            ## Database-Directory Which contains images named with their UniqueID same as .csv file students details:
-            # # self.db_directory = 'students_pics'   # Only for Local use
-            # self.db_directory = 'db_picsFolder'   # Only for Local use
-
             # Final facial results -> consist of facial coord and recognised student info
             self.stud_dic_results = self.RecogniseFaces(self.db_directory, self.frame)
 
@@ -532,31 +576,41 @@ class MainWindow(QWidget):
             traceback.print_exc()
             print(f"Exception in the recognition process is: {e}")
  
-    def captureFrame(self):
-
-        # Capture the current frame
-        ret, self.frame = cv2.VideoCapture(0).read()
+    def captureFrame(self, capture=True):
+                
+        print('self.url from capture frame: ', self.url)
+        self.videoChannel = cv2.VideoCapture(self.url)
         
-        if ret:
+        if capture==True:
+            # videoChannel = self.videoChannel
+            ret, self.frame = self.videoChannel.read()
+            if ret:
+                # send the captured image for recognition.
+                self.process_image()
+                self.showRecognizedImage(self.frame)
 
-            # send the captured image for recognition.
-            self.process_image()
-            # cv2.imshow("After Recog", self.frame)  # for testing 
+        else:
+            if self.current_index < len(self.number_list):
+                current_number = self.number_list[self.current_index]
+
+                self.url = f'rtsp://admin:admin123@192.168.1.2:554/H264?ch={current_number}&subtype=0'
+                self.videoChannel = cv2.VideoCapture(self.url)
+                self.Worker.setUrl(self.videoChannel)
+                self.current_index += 1
             
-            # height, width, channel = self.frame.shape
+            else:
+                self.current_index = 0
 
-            # bytes_per_line = 3 * width
-            # qt_image = QImage(self.frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
-                    
-            # self.showRecognizedImage(qt_image.rgbSwapped())
-            self.showRecognizedImage(self.frame)
-
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
 
     def CancelFeed(self):
         self.Worker.stop()
 
+    def movementFeed(self):
+        # if not hasattr(self, 'movObj') or not self.movObj.isVisible():
+        #     self.movObj = APIClientWidget(FinalBasic_path)
+        
+        self.movObj = APIClientWidget(FinalBasic_path)
+        
     def sizeHint(self):
         return QSize(800, 600)
 
@@ -568,31 +622,33 @@ class MainWindow(QWidget):
 
         super().resizeEvent(event)
 
-
+# Live Streaming worker that runs on another thread
 class Worker(QThread):
 
     ImageUpdate = pyqtSignal(QImage)
 
-    def __init__(self, parent=None):
+    def __init__(self, videoChannel, parent=None):
         super().__init__(parent)
         self.frameSize = (1080, 640)
+        # self.url = 'rtsp://admin:admin@192.168.1.163:554/live/av0'
+        self.videoChannel = videoChannel
+
+    def setUrl(self, videoChannel):
+        self.videoChannel = videoChannel
 
     def run(self):
         self.ThreadActive = True
-        Capture = cv2.VideoCapture(0)
 
         while self.ThreadActive:
-        
-            ret, frame = Capture.read()
-
+            ret, frame = self.videoChannel.read()
             if ret:
                 # Image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 # FlippedImage = cv2.flip(Image, 1)
                 FlippedImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Avoid flipping the image
-
                 ConvertToQtFormat = QImage(FlippedImage.data, FlippedImage.shape[1], FlippedImage.shape[0], QImage.Format_RGB888)
                 Pic = ConvertToQtFormat.scaled(self.frameSize[0], self.frameSize[1], Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
+                
 
     def stop(self):
         self.ThreadActive = False
@@ -619,7 +675,6 @@ def unhide_directory(DBimageFolder_path):
         print(f"Error unhiding directory: {e}")
 
     
-
 if __name__ == "__main__":
 
     App = QApplication(sys.argv)
@@ -649,5 +704,3 @@ if __name__ == "__main__":
         print('IntellixApp_data directory not built, please run CRED_CLI.exe')
  
     
-
-

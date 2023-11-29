@@ -10,6 +10,7 @@ mysql-connector-python = "*"
 pyqt5 = "*"
 mtcnn = "*"
 pyinstaller = "*"
+requests = "*"
 
 [dev-packages]
 
