@@ -88,8 +88,7 @@ class RecognizedImageDialog(QDialog):
 
         # Set the layout for the dialog
         self.setLayout(layout)
-        
-        
+    
     def setRectArea(self, coords):
         # Check if the image is not None and the dialog is fully initialized
         if self.image_np is not None and self.width() > 0 and self.height() > 0:
@@ -103,8 +102,7 @@ class RecognizedImageDialog(QDialog):
             self.rect_area.append(QRect(x, y, w, h))
 
             self.update()
-
-       
+   
     def showUserInfoPopUp(self, event):
         for i, rect_area in enumerate(self.rect_area):
             if rect_area and rect_area.contains(event.pos()):
@@ -182,7 +180,6 @@ class StartDialog(QDialog):
         DatabaseSetup_Object = DatabaseSetup(self.client_code)
         
         self.accept()  # Close the dialog if needed
-
 
 # Database setup
 class DatabaseSetup():
