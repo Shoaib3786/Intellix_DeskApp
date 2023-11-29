@@ -60,7 +60,6 @@ class CustomImageDialog(QDialog):
 
 
 class RecognizedImageDialog(QDialog):
-
     def __init__(self, image_np, stud_info,  parent=None):
         super(RecognizedImageDialog, self).__init__(parent)
 
@@ -90,11 +89,10 @@ class RecognizedImageDialog(QDialog):
         # Set the layout for the dialog
         self.setLayout(layout)
         
+        
     def setRectArea(self, coords):
-
         # Check if the image is not None and the dialog is fully initialized
         if self.image_np is not None and self.width() > 0 and self.height() > 0:
-            
             # Calculate scaled coordinates based on the original image size and scaled image size
             x = int(coords[0] / self.image_np.shape[1] * self.pixmap.width() )
             y = int(coords[1] / self.image_np.shape[0] * self.pixmap.height() )
@@ -105,12 +103,11 @@ class RecognizedImageDialog(QDialog):
             self.rect_area.append(QRect(x, y, w, h))
 
             self.update()
-            
+
+       
     def showUserInfoPopUp(self, event):
         for i, rect_area in enumerate(self.rect_area):
-
             if rect_area and rect_area.contains(event.pos()):
-            
                 db_image = self.Recog_student_info[i][f'user{i+1}']['database_face']
                 curr_image = self.Recog_student_info[i][f'user{i+1}']['cropped_curr_face']
                 user_info = self.Recog_student_info[i][f'user{i+1}']['stud_details']
@@ -185,6 +182,7 @@ class StartDialog(QDialog):
         DatabaseSetup_Object = DatabaseSetup(self.client_code)
         
         self.accept()  # Close the dialog if needed
+
 
 # Database setup
 class DatabaseSetup():
@@ -649,7 +647,6 @@ class Worker(QThread):
                 Pic = ConvertToQtFormat.scaled(self.frameSize[0], self.frameSize[1], Qt.KeepAspectRatio)
                 self.ImageUpdate.emit(Pic)
                 
-
     def stop(self):
         self.ThreadActive = False
         self.quit()
