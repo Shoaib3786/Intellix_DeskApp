@@ -26,6 +26,7 @@ db_df = None
 class CustomImageDialog(QDialog):
 
     def __init__(self, image_cv, curr_image, stud_information , parent=None):
+        
         super(CustomImageDialog, self).__init__(parent)
 
         self.stud_info = stud_information  # make student info
@@ -52,11 +53,41 @@ class CustomImageDialog(QDialog):
             if key != 'coords':
                 text_label = QLabel(f"<b>{key.capitalize()}</b>: {value}", self)
                 text_label.setAlignment(Qt.AlignLeft)
+                text_label.setStyleSheet("color: white;")
                 layout.addWidget(text_label)
+
+        self.CancelBTN = QPushButton("Close")
+        self.CancelBTN.clicked.connect(self.closePopUp)
+        # Set the style sheet for the button
+        self.CancelBTN.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 5px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.CancelBTN.setFixedSize(120,30)
+
+        layout.addWidget(self.CancelBTN, alignment=Qt.AlignCenter)
+
+        # Set the background color to black
+        self.setAutoFillBackground(True)
+        pal = self.palette()
+        pal.setColor(QPalette.Window, QColor(0, 0, 0))  # Set RGB values to black
+        self.setPalette(pal)
 
         # Optional: Set other properties of the dialog
         self.setWindowTitle("Student Information")
         self.setGeometry(50, 150, 300, 400)  # Adjust the size of the dialog for custom design
+
+    def closePopUp(self):
+        self.close()
 
 
 class RecognizedImageDialog(QDialog):
@@ -83,12 +114,40 @@ class RecognizedImageDialog(QDialog):
         self.pixmap = QPixmap.fromImage(Pic)
         self.image_label.setPixmap(self.pixmap)
 
+        self.CancelBTN = QPushButton("Close")
+        self.CancelBTN.clicked.connect(self.closeRecogImage)
+        # Set the style sheet for the button
+        self.CancelBTN.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 5px;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.CancelBTN.setFixedSize(160,35)
+
+        layout.addWidget(self.CancelBTN, alignment=Qt.AlignCenter)
+
+        # Set the background color to black
+        self.setAutoFillBackground(True)
+        pal = self.palette()
+        pal.setColor(QPalette.Window, QColor(0, 0, 0))  # Set RGB values to black
+        self.setPalette(pal)
+
+
         # Set the dialog size to the maximum screen size
         self.setWindowTitle("Recognized Image")
 
         # Set the layout for the dialog
         self.setLayout(layout)
     
+
     def setRectArea(self, coords):
         # Check if the image is not None and the dialog is fully initialized
         if self.image_np is not None and self.width() > 0 and self.height() > 0:
@@ -116,6 +175,11 @@ class RecognizedImageDialog(QDialog):
         self.showUserInfoPopUp(event)
 
 
+    def closeRecogImage(self):
+        self.close()
+        pass
+
+
     # def paintEvent(self, event):
     #     painter = QPainter(self.image_label.pixmap())
     #     painter.setPen(QPen(QColor(255, 0, 0), 2))  # Red color, 2-pixel width
@@ -135,36 +199,79 @@ class RecognizedImageDialog(QDialog):
 
 # Intro Screen - Client's code enter
 class StartDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, FinalBasicPath, parent=None):
         super(StartDialog, self).__init__(parent)
 
         self.client_code = None  # Variable to store the input value
+        self.FinalBasePath = FinalBasicPath
 
-        label = QLabel("Intellix", self)
-        label.setFont(QFont("Arial", 48, QFont.Bold))  # Set a larger font size
-        label.setAlignment(Qt.AlignCenter)
+        logoPath = os.path.join(self.FinalBasePath, 'buttons_images', 'intellix_logo.png')
+        # Add INTELLIX LOGO
+        logo_label = QLabel(self)
+        pixmap = QPixmap(logoPath)  # Replace with the actual path to your image
+        logo_label.setPixmap(pixmap)
+        logo_label.setAlignment(Qt.AlignCenter)
+ 
 
-        input_text = QLineEdit(self)
-        input_text.setObjectName('input_text')  # Set the object name
-        input_text.setFont(QFont("Arial", 16))  # Set a larger font size for the input field
-        input_text.setPlaceholderText('Database code')
-        input_text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow horizontal and vertical expansion
-        input_text.setMaximumWidth(800)  # Set the maximum width as needed
-        input_text.setMaximumHeight(200)  # Set the maximum height as needed
+        placeholder_text = 'Client code'
+        self.input_text = QLineEdit(self)
+        self.input_text.setObjectName('input_text')  # Set the object name
+        self.input_text.setFont(QFont("Arial", 16))  # Set a larger font size for the input field
+        self.input_text.setPlaceholderText(placeholder_text)
+        self.input_text.setAlignment(Qt.AlignCenter)
+        self.input_text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Allow horizontal and vertical expansion
+        self.input_text.setFixedSize(300,35)
+        # self.input_text.setMaximumWidth(800)  # Set the maximum width as needed
+        # self.input_text.setMaximumHeight(200)  # Set the maximum height as needed
 
-        ok_button = QPushButton("OK", self)
-        ok_button.setMaximumWidth(600)
-        ok_button.clicked.connect(self.on_ok_button_clicked)
+        self.input_text.setStyleSheet(  # Styling the input_text
+            "QLineEdit {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+
+        )
+
+        self.ok_button = QPushButton("OK", self)
+        # ok_button.setMaximumWidth(600)
+        # Set the style sheet for the button
+        self.ok_button.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+        self.ok_button.setFixedSize(150,25)
+
+        self.ok_button.clicked.connect(self.on_ok_button_clicked)
 
         label_layout = QHBoxLayout()
-        label_layout.addWidget(label)
+        label_layout.addWidget(logo_label)
 
         central_layout = QVBoxLayout(self)
         central_layout.addStretch(2)  # Add stretch to center vertically
         central_layout.addLayout(label_layout)
-        central_layout.addWidget(input_text, alignment=Qt.AlignCenter)  # Remove alignment settings
-        central_layout.addWidget(ok_button, alignment=Qt.AlignCenter)   # Remove alignment settings
+        central_layout.addWidget(self.input_text, alignment=Qt.AlignCenter)  # Remove alignment settings
+        central_layout.addWidget(self.ok_button, alignment=Qt.AlignCenter)   # Remove alignment settings
         central_layout.addStretch(2)  # Add stretch to center vertically
+
+        
+        # Set the background color to black
+        self.setAutoFillBackground(True)
+        pal = self.palette()
+        pal.setColor(QPalette.Window, QColor(0, 0, 0))  # Set RGB values to black
+        self.setPalette(pal)
+
 
         # Set the dialog size to cover the whole screen
         screen_geometry = QDesktopWidget().screenGeometry()
@@ -337,7 +444,6 @@ class MainWindow(QWidget):
         # [REPLACE THESE NUMBERS WITH YOUR ORIGINAL CAMERA CHANNELS]
         self.number_list = range(1, 13)  # Replace this with your list of numbers
         
-        
         self.current_index = 0
 
         global db_df  # for accesing the CSV file
@@ -350,47 +456,129 @@ class MainWindow(QWidget):
 
         self.HBL = QHBoxLayout()
 
-        self.ButtonUP = QPushButton('Cam-Controller')
+        self.ButtonUP = QPushButton('Camera Controller')
         self.ButtonUP.clicked.connect(self.movementFeed)
+
+        # Set the style sheet for the button
+        self.ButtonUP.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.ButtonUP.setFixedSize(150,30)
+
+
         self.HBL.addWidget(self.ButtonUP, 0)
 
         self.MovementFeedWidget = QWidget()
         self.MovementFeedWidget.setVisible(False)
         self.MovementFeedLayout = QVBoxLayout(self.MovementFeedWidget)
-        self.MovementFeedLayout.addWidget(QLabel("Cam-Controller Content"))
+        self.MovementFeedLayout.addWidget(QLabel("Camera Controller"))
 
         self.VBL.addLayout(self.HBL)
         self.VBL.addWidget(self.MovementFeedWidget)
 
-
         self.CaptureBTN = QPushButton("Capture")
         self.CaptureBTN.clicked.connect(lambda: self.captureFrame(capture=True))
+        # Set the style sheet for the button
+        self.CaptureBTN.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.CaptureBTN.setFixedSize(150,30)
+
+
         self.HBL.addWidget(self.CaptureBTN, 0)
 
         self.SwitchBTN = QPushButton("Switch camera")
         self.SwitchBTN.clicked.connect(lambda: self.captureFrame(capture=False))
+        # Set the style sheet for the button
+        self.SwitchBTN.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.SwitchBTN.setFixedSize(150,30)
         self.HBL.addWidget(self.SwitchBTN, 0)
 
-        self.CancelBTN = QPushButton("Cancel")
-        self.CancelBTN.clicked.connect(self.CancelFeed)
-        self.HBL.addWidget(self.CancelBTN, 0)
+
+        self.CloseBTN = QPushButton("Close")
+        self.CloseBTN.clicked.connect(self.CancelFeed)
+        # Set the style sheet for the button
+        self.CloseBTN.setStyleSheet(
+            "QPushButton {"
+            "   background-color: black;"
+            "   border: 2px solid white;"
+            "   color: white;"
+            "   border-radius: 7px;"
+            "   width: 20%;" 
+            "}"
+            "QPushButton:hover {"
+            "   background-color: white;"  # Change color on hover if needed
+            "   color: black;"
+            "}"
+        )
+
+        self.CloseBTN.setFixedSize(150,30)
+
+        
+        self.HBL.addWidget(self.CloseBTN, 0)
 
         self.VBL.addLayout(self.HBL)
 
         self.url= 'rtsp://admin:admin@192.168.1.163:554/live/av0'
+        # self.url=0  # [FOR PROJECT DEMO]
         self.videoChannel = cv2.VideoCapture(self.url)
         self.Worker = Worker(self.videoChannel, parent=self)
         
         self.Worker.start()
         self.Worker.ImageUpdate.connect(self.ImageUpdateSlot)
         self.recognized_image_dialog = None
-        self.setLayout(self.VBL)
 
+
+        # Connect the destroyed signal of MainWindow to closeMovementButton method
+        self.destroyed.connect(self.closeMovementButton)
+
+
+        # Set the background color to black
+        self.setAutoFillBackground(True)
+        pal = self.palette()
+        pal.setColor(QPalette.Window, QColor(0, 0, 0))  # Set RGB values to black
+        self.setPalette(pal)
+
+        self.setLayout(self.VBL)
 
     def toggleMovementFeed(self):
         self.MovementFeedWidget.setVisible(not self.MovementFeedWidget.isVisible())
         self.MovementFeedWidget.raise_()  # Bring the Cam-Controller Widget to the front
-
 
     def switchButton(self):
          
@@ -407,7 +595,6 @@ class MainWindow(QWidget):
         
         else: pass
             # self.label.setText('No more numbers.')
-
 
     def ImageUpdateSlot(self, Image):
         self.FeedLabel.setPixmap(QPixmap.fromImage(Image))
@@ -565,12 +752,10 @@ class MainWindow(QWidget):
             # print('type stud_dic_results: ', type(stud_dic_results[0]))
             print('stud_dic_results.keys: ', self.stud_dic_results[0].keys())
 
-           
-
         except Exception as e:
             traceback.print_exc()
             print(f"Exception in the recognition process is: {e}")
- 
+
     def captureFrame(self, capture=True):
                 
         print('self.url from capture frame: ', self.url)
@@ -596,14 +781,12 @@ class MainWindow(QWidget):
             else:
                 self.current_index = 0
 
-
     def CancelFeed(self):
+        self.closeMovementButton()
         self.Worker.stop()
-
+        self.close()
+    
     def movementFeed(self):
-        # if not hasattr(self, 'movObj') or not self.movObj.isVisible():
-        #     self.movObj = APIClientWidget(FinalBasic_path)
-        
         self.movObj = APIClientWidget(FinalBasic_path)
         
     def sizeHint(self):
@@ -616,6 +799,12 @@ class MainWindow(QWidget):
             self.Worker.updateFrameSize()
 
         super().resizeEvent(event)
+
+    def closeMovementButton(self):
+        # Check if movObj is not None and close it
+        if self.movObj:
+            self.movObj.close()
+
 
 # Live Streaming worker that runs on another thread
 class Worker(QThread):
@@ -660,7 +849,6 @@ def hide_directory(DBimageFolder_path):
     except Exception as e:
         print(f"Error in hiding Images directory is: {e}")
 
-
 def unhide_directory(DBimageFolder_path):
     try:
         subprocess.run(["chflags", "nohidden", DBimageFolder_path])
@@ -668,7 +856,7 @@ def unhide_directory(DBimageFolder_path):
     except Exception as e:
         print(f"Error unhiding directory: {e}")
 
-    
+
 if __name__ == "__main__":
 
     App = QApplication(sys.argv)
@@ -680,7 +868,7 @@ if __name__ == "__main__":
     
     if os.path.exists(FinalBasic_path):
 
-        start_dialog = StartDialog()
+        start_dialog = StartDialog(FinalBasic_path)
         if start_dialog.exec_() == QDialog.Accepted:
 
             # Hide the Students images directory

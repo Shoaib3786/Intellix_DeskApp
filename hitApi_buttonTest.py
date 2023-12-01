@@ -155,7 +155,7 @@ class APIClientWidget(QDialog):
         self.VBL1.addWidget(focusIn_button, 0)     
         self.VBL1.addWidget(focusOut_button, 0)
         focus_label = QLabel('FOCUS', self)
-        focus_label.setStyleSheet("background-color: white; color: black;")    
+        focus_label.setStyleSheet("background-color: black; color: white;")    
         self.VBL1.addWidget(focus_label, 0, alignment=Qt.AlignCenter)
 
         # Set alignment to align buttons to the bottom
@@ -165,7 +165,7 @@ class APIClientWidget(QDialog):
         self.VBL2.addWidget(zoomIn_button, 0)     
         self.VBL2.addWidget(zoomOut_button, 0) 
         zoom_label = QLabel('ZOOM', self)
-        zoom_label.setStyleSheet("background-color: white; color: black;")       
+        zoom_label.setStyleSheet("background-color: black; color: white;")       
         self.VBL2.addWidget(zoom_label, 0, alignment=Qt.AlignCenter) 
 
         # Set alignment to align buttons to the bottom
@@ -177,10 +177,11 @@ class APIClientWidget(QDialog):
         self.HBL.addLayout(self.VBL2)
   
         self.setLayout(self.HBL)
-        self.setStyleSheet("background-color: white;")
+        self.setStyleSheet("background-color: black;")
 
-        self.setGeometry(300, 300, 500, 350)
-        self.setWindowTitle('API Client')
+
+        self.setGeometry(300, 300, 350, 250)
+        self.setWindowTitle('Movement buttons')
         self.show()
 
     def start_api(self, api_url):
