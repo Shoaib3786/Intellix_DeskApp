@@ -16,7 +16,9 @@ from encryptFiles import encryptCSV
 from decryptFiles import decryptCSV
 import subprocess
 import traceback
-from hitApi_buttonTest import APIClientWidget
+from hitApi_buttonClass import APIClientWidget
+import json
+
 
 # Global variable
 db_df = None
@@ -89,7 +91,6 @@ class CustomImageDialog(QDialog):
     def closePopUp(self):
         self.close()
 
-
 class RecognizedImageDialog(QDialog):
     def __init__(self, image_np, stud_info,  parent=None):
         super(RecognizedImageDialog, self).__init__(parent)
@@ -147,7 +148,6 @@ class RecognizedImageDialog(QDialog):
         # Set the layout for the dialog
         self.setLayout(layout)
     
-
     def setRectArea(self, coords):
         # Check if the image is not None and the dialog is fully initialized
         if self.image_np is not None and self.width() > 0 and self.height() > 0:
@@ -173,7 +173,6 @@ class RecognizedImageDialog(QDialog):
 
     def mousePressEvent(self, event):
         self.showUserInfoPopUp(event)
-
 
     def closeRecogImage(self):
         self.close()
@@ -290,6 +289,7 @@ class StartDialog(QDialog):
 
 # Database setup
 class DatabaseSetup():
+    
     def __init__(self, clientCode):
 
         global db_df
@@ -303,7 +303,7 @@ class DatabaseSetup():
         
 
         if 'cli_log.txt' not in os.listdir(self.intellixApp_dataPath):
-            print('\n\n ELIF CONDITION OF DATA CLASS \n\n')
+            print('\n\n IF CONDITION OF DATA CLASS \n\n')
             print('Client DB Credentials file not in the directory Run the CRED_CLI.exe')
 
 
@@ -336,7 +336,7 @@ class DatabaseSetup():
 
         else:
             print('\n\n ELSE CONDITION OF DATA CLASS \n\n')
-            # demoCSVfile_path = "/Users/shoaib/Documents/MAIN/RNS/RNS Project/Face Recognition/fetchedStudent_data.csv"
+            
             # print('Calling the decryption function to decrypt the csv file')
             self.objDecryptData = decryptCSV(self.DBcsv_filepath + "_encrypt" + '.enc', self.intellixApp_dataPath).decrypt_file()
 
@@ -346,7 +346,7 @@ class DatabaseSetup():
             print(Decrypt_df.head())
 
             db_df = Decrypt_df
-             
+
     def connectDatabase(self):
         print("I'm in CONNECTDATABASE..")
         try:
@@ -358,18 +358,14 @@ class DatabaseSetup():
                     password = str(self.clientCred_dic[str(self.clientCode)]['password']),
                     database = str(self.clientCred_dic[str(self.clientCode)]['database'])
                     )
-               
                 return myDb
-        
             else:
                 print("Client entered code doesn't matches cli_log")
-
         except Exception as e:
             print("Exception in connecting database is: ", e)
 
     # CODE FOR UNLOADING THE CREDENTIAL FILES
     def load_credentialFromBinary(self):
-        
         try:
             with open(self.clientCred_filepath, 'rb') as file:
                 loaded_data = pickle.load(file)
@@ -441,12 +437,21 @@ class MainWindow(QWidget):
 
         super(MainWindow, self).__init__()
 
+        self.filename_camera_log = os.path.join(FinalBasic_path,'camera_log.config')  # folder path for imagedata
+
+        # Getting the config file.
+        with open(self.filename_camera_log, 'r') as file:
+            # Load the data from the file into a dictionary
+            self.cameraDic = json.load(file)
+        
         # [REPLACE THESE NUMBERS WITH YOUR ORIGINAL CAMERA CHANNELS]
-        self.number_list = range(1, 13)  # Replace this with your list of numbers
+        self.number_list = range(1, len(list(self.cameraDic.keys())))  # Replace this with your list of numbers
         
         self.current_index = 0
 
         global db_df  # for accesing the CSV file
+        self.buttonsAPIDic = {}
+
 
         self.db_directory = os.path.join(FinalBasic_path,'db_picsFolder')
 
@@ -456,11 +461,11 @@ class MainWindow(QWidget):
 
         self.HBL = QHBoxLayout()
 
-        self.ButtonUP = QPushButton('Camera Controller')
-        self.ButtonUP.clicked.connect(self.movementFeed)
+        self.movementButton = QPushButton('Camera Controller')
+        self.movementButton.clicked.connect(self.movementFeed)
 
         # Set the style sheet for the button
-        self.ButtonUP.setStyleSheet(
+        self.movementButton.setStyleSheet(
             "QPushButton {"
             "   background-color: black;"
             "   border: 2px solid white;"
@@ -474,10 +479,9 @@ class MainWindow(QWidget):
             "}"
         )
 
-        self.ButtonUP.setFixedSize(150,30)
+        self.movementButton.setFixedSize(150,30)
 
-
-        self.HBL.addWidget(self.ButtonUP, 0)
+        self.HBL.addWidget(self.movementButton, 0)
 
         self.MovementFeedWidget = QWidget()
         self.MovementFeedWidget.setVisible(False)
@@ -489,6 +493,7 @@ class MainWindow(QWidget):
 
         self.CaptureBTN = QPushButton("Capture")
         self.CaptureBTN.clicked.connect(lambda: self.captureFrame(capture=True))
+        
         # Set the style sheet for the button
         self.CaptureBTN.setStyleSheet(
             "QPushButton {"
@@ -506,11 +511,11 @@ class MainWindow(QWidget):
 
         self.CaptureBTN.setFixedSize(150,30)
 
-
         self.HBL.addWidget(self.CaptureBTN, 0)
 
         self.SwitchBTN = QPushButton("Switch camera")
         self.SwitchBTN.clicked.connect(lambda: self.captureFrame(capture=False))
+        
         # Set the style sheet for the button
         self.SwitchBTN.setStyleSheet(
             "QPushButton {"
@@ -529,9 +534,9 @@ class MainWindow(QWidget):
         self.SwitchBTN.setFixedSize(150,30)
         self.HBL.addWidget(self.SwitchBTN, 0)
 
-
         self.CloseBTN = QPushButton("Close")
         self.CloseBTN.clicked.connect(self.CancelFeed)
+
         # Set the style sheet for the button
         self.CloseBTN.setStyleSheet(
             "QPushButton {"
@@ -549,12 +554,10 @@ class MainWindow(QWidget):
 
         self.CloseBTN.setFixedSize(150,30)
 
-        
         self.HBL.addWidget(self.CloseBTN, 0)
-
         self.VBL.addLayout(self.HBL)
 
-        self.url= 'rtsp://admin:admin@192.168.1.163:554/live/av0'
+        self.url= self.cameraDic[list(self.cameraDic.keys())[0]][0]['camUrl']
         # self.url=0  # [FOR PROJECT DEMO]
         self.videoChannel = cv2.VideoCapture(self.url)
         self.Worker = Worker(self.videoChannel, parent=self)
@@ -563,10 +566,8 @@ class MainWindow(QWidget):
         self.Worker.ImageUpdate.connect(self.ImageUpdateSlot)
         self.recognized_image_dialog = None
 
-
         # Connect the destroyed signal of MainWindow to closeMovementButton method
         self.destroyed.connect(self.closeMovementButton)
-
 
         # Set the background color to black
         self.setAutoFillBackground(True)
@@ -581,21 +582,16 @@ class MainWindow(QWidget):
         self.MovementFeedWidget.raise_()  # Bring the Cam-Controller Widget to the front
 
     def switchButton(self):
-         
         if self.current_index < len(self.number_list):
-            # current_number = self.number_list[self.current_index]
+            
+            url = 'rtsp://admin:admin123@192.168.1.2:554/H264?ch=5&subtype=0'
 
-            url = 'rtsp://admin:admin@192.168.1.163:554/live/av0'
-
-            # print('current_number: ', current_number)
-            # print('url: ', url)
-            # self.label.setText(f'Current Number: {current_number}')
             self.videoChannel = cv2.VideoCapture(url)
             self.current_index += 1
         
-        else: pass
-            # self.label.setText('No more numbers.')
-
+        else: 
+            self.current_index = 0
+            
     def ImageUpdateSlot(self, Image):
         self.FeedLabel.setPixmap(QPixmap.fromImage(Image))
 
@@ -737,18 +733,15 @@ class MainWindow(QWidget):
 
     # Perform recognisation processing...
     def process_image(self): 
-
         try:
-
             # Final facial results -> consist of facial coord and recognised student info
             self.stud_dic_results = self.RecogniseFaces(self.db_directory, self.frame)
 
             cv2.imwrite('After_recognition.jpeg', self.frame)
-            # cv2.imshow('Window after recog', self.frame)  # for verification
-
+                        
             # print('shape of the recog face: ', image_np.shape)
             print('stud_dic_results; ', self.stud_dic_results)
-
+            
             # print('type stud_dic_results: ', type(stud_dic_results[0]))
             print('stud_dic_results.keys: ', self.stud_dic_results[0].keys())
 
@@ -762,7 +755,6 @@ class MainWindow(QWidget):
         self.videoChannel = cv2.VideoCapture(self.url)
         
         if capture==True:
-            # videoChannel = self.videoChannel
             ret, self.frame = self.videoChannel.read()
             if ret:
                 # send the captured image for recognition.
@@ -772,28 +764,33 @@ class MainWindow(QWidget):
         else:
             if self.current_index < len(self.number_list):
                 current_number = self.number_list[self.current_index]
-
-                self.url = f'rtsp://admin:admin123@192.168.1.2:554/H264?ch={current_number}&subtype=0'
+                print('from captureFrame() current_number: ',current_number)
+                print('from captureFrame() list(self.cameraDic.keys())[current_number]: ',list(self.cameraDic.keys())[current_number])
+                
+                self.url = self.cameraDic[list(self.cameraDic.keys())[current_number]][0]['camUrl']
+                self.buttonsAPIDic = self.cameraDic[list(self.cameraDic.keys())[current_number]][0]['buttonsApi']
+                
+                print('from captureFrame(): ',self.url)
                 self.videoChannel = cv2.VideoCapture(self.url)
                 self.Worker.setUrl(self.videoChannel)
                 self.current_index += 1
             
             else:
-                self.current_index = 0
-
+                # self.cameraDic[list(self.cameraDic.keys())[0]][0]['camUrl']
+                self.current_index = 0 
+    
     def CancelFeed(self):
         self.closeMovementButton()
         self.Worker.stop()
         self.close()
     
     def movementFeed(self):
-        self.movObj = APIClientWidget(FinalBasic_path)
+        self.movObj = APIClientWidget(FinalBasic_path, camButtonsAPIDic=self.buttonsAPIDic)
         
     def sizeHint(self):
         return QSize(800, 600)
 
     def resizeEvent(self, event):
-        
         if self.width() == self.screen().geometry().width() or self.height() == self.screen().geometry().height():
             print("Window maximized")
             self.Worker.updateFrameSize()
@@ -822,7 +819,6 @@ class Worker(QThread):
 
     def run(self):
         self.ThreadActive = True
-
         while self.ThreadActive:
             ret, frame = self.videoChannel.read()
             if ret:
@@ -880,7 +876,6 @@ if __name__ == "__main__":
             Root.show()
 
         sys.exit(App.exec_())
-
 
     else:
         print('IntellixApp_data directory not built, please run CRED_CLI.exe')

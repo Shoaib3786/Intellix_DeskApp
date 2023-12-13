@@ -7,10 +7,12 @@ import os
 
 
 class APIClientWidget(QDialog):
-    def __init__(self, FinalBasic_path, parent=None):
+    
+    def __init__(self, FinalBasic_path, camButtonsAPIDic, parent=None):
         super(APIClientWidget, self).__init__(parent)
 
         self.finalBasePath = FinalBasic_path
+        self.camDic = camButtonsAPIDic
 
         self.button_imgPath = {
             'left': os.path.join(self.finalBasePath,'buttons_images', 'left.png'),
@@ -23,36 +25,67 @@ class APIClientWidget(QDialog):
             'focusdown': os.path.join(self.finalBasePath,'buttons_images', 'focusdown.png')
         }
 
+        # """Buttons API's"""
+        # self.leftStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"left_start", "byValue":60}}}'
+        # self.leftStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"left_stop", "byValue":60}}}'
+        
+        # self.rightStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"right_start", "byValue":60}}}'
+        # self.rightStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"right_stop", "byValue":60}}}'
+        
+        # self.upStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"up_start", "byValue":60}}}'
+        # self.upStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"up_stop", "byValue":60}}}'
+        
+        # self.downStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"down_start", "byValue":60}}}'
+        # self.downStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"down_stop", "byValue":60}}}'
+        
+        # self.zoomInStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomadd_start", "byValue":60}}}'
+        # self.zoomInStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomadd_stop", "byValue":60}}}'
+        
+        # self.zoomOutStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomdec_start", "byValue":60}}}'
+        # self.zoomOutStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomdec_stop", "byValue":60}}}'
+        
+        # self.focusInStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusadd_start", "byValue":60}}}'
+        # self.focusInStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusadd_stop", "byValue":60}}}'
+        
+        # self.focusOutStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
+        # self.focusOutStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
+        
         """Buttons API's"""
-        self.leftStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"left_start", "byValue":60}}}'
-        self.leftStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"left_stop", "byValue":60}}}'
+        self.leftStart_api = self.camDic['leftStart_but']
+        self.leftStop_api = self.camDic['leftStop_but']
+        print('self.left: ',self.leftStart_api, self.leftStop_api)
         
-        self.rightStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"right_start", "byValue":60}}}'
-        self.rightStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"right_stop", "byValue":60}}}'
+        self.rightStart_api = self.camDic['rightStart_but']
+        self.rightStop_api = self.camDic['rightStop_but']
+        print('self.right: ',self.rightStart_api, self.rightStop_api)
         
-        self.upStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"up_start", "byValue":60}}}'
-        self.upStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"up_stop", "byValue":60}}}'
+        self.upStart_api = self.camDic['upStart_but']
+        self.upStop_api = self.camDic['upStop_but']
+        print('self.up: ',self.upStart_api, self.upStop_api)
         
-        self.downStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"down_start", "byValue":60}}}'
-        self.downStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"down_stop", "byValue":60}}}'
+        self.downStart_api = self.camDic['downStart_but']
+        self.downStop_api = self.camDic['downStop_but']
+        print('self.down: ',self.downStart_api, self.downStop_api)
         
-        self.zoomInStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomadd_start", "byValue":60}}}'
-        self.zoomInStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomadd_stop", "byValue":60}}}'
+        self.zoomInStart_api = self.camDic['zoomInStart_but']
+        self.zoomInStop_api = self.camDic['zoomInStop_but']
+        print('self.zoomIn: ',self.zoomInStart_api, self.zoomInStop_api)
         
-        self.zoomOutStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomdec_start", "byValue":60}}}'
-        self.zoomOutStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"zoomdec_stop", "byValue":60}}}'
+        self.zoomOutStart_api = self.camDic['zoomOutStart_but']
+        self.zoomOutStop_api = self.camDic['zoomOutStop_but']
+        print('self.zoomOut: ',self.zoomOutStart_api, self.zoomOutStop_api)
         
-        self.focusInStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusadd_start", "byValue":60}}}'
-        self.focusInStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusadd_stop", "byValue":60}}}'
+        self.focusInStart_api = self.camDic['focusInStart_but']
+        self.focusInStop_api = self.camDic['focusInStop_but']
+        print('self.focusIn: ',self.focusInStart_api, self.focusInStop_api)
         
-        self.focusOutStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
-        self.focusOutStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
+        self.focusOutStart_api = self.camDic['focusOutStart_but']
+        self.focusOutStop_api = self.camDic['focusOutStop_but']
+        print('self.focusOut: ',self.focusOutStart_api, self.focusOutStop_api)
         
-
         self.init_ui()
 
     def init_ui(self):
-
         self.HBL = QHBoxLayout()
 
         self.GridLayout = QGridLayout()
@@ -130,19 +163,13 @@ class APIClientWidget(QDialog):
         # Apply a custom style to round the edges
         focusOut_button.setStyleSheet("border: none; border-radius: 5px")
 
-
         # Set fixed sizes for the buttons
         button_size = (100, 60)  # Adjust the size as needed
 
-        # left_button.setFixedSize(*button_size)
-        # right_button.setFixedSize(*button_size)
-        # up_button.setFixedSize(*button_size)
-        # down_button.setFixedSize(*button_size)
         zoomIn_button.setFixedSize(*button_size)
         zoomOut_button.setFixedSize(*button_size)
         focusIn_button.setFixedSize(*button_size)
         focusOut_button.setFixedSize(*button_size)
-
 
         self.GridLayout.addWidget(left_button, 1, 1)     # row 1, column 0
         self.GridLayout.addWidget(right_button, 1, 3)    # row 1, column 2
@@ -171,14 +198,12 @@ class APIClientWidget(QDialog):
         # Set alignment to align buttons to the bottom
         self.VBL2.setAlignment(Qt.AlignCenter)
 
-        
         self.HBL.addLayout(self.VBL1)
         self.HBL.addLayout(self.GridLayout)
         self.HBL.addLayout(self.VBL2)
   
         self.setLayout(self.HBL)
         self.setStyleSheet("background-color: black;")
-
 
         self.setGeometry(300, 300, 350, 250)
         self.setWindowTitle('Movement buttons')
