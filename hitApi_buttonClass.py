@@ -50,6 +50,7 @@ class APIClientWidget(QDialog):
         # self.focusOutStart_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
         # self.focusOutStop_api = 'http://192.168.1.163/ajaxcom?szCmd={"SysCtrl":{"PtzCtrl":{"nChanel":0,"szPtzCmd":"focusdec_start", "byValue":60}}}'
         
+        
         """Buttons API's"""
         self.leftStart_api = self.camDic['leftStart_but']
         self.leftStop_api = self.camDic['leftStop_but']

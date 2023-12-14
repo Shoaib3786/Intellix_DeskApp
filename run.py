@@ -450,9 +450,7 @@ class MainWindow(QWidget):
         self.current_index = 0
 
         global db_df  # for accesing the CSV file
-        self.buttonsAPIDic = {}
-
-
+        
         self.db_directory = os.path.join(FinalBasic_path,'db_picsFolder')
 
         self.VBL = QVBoxLayout()
@@ -491,7 +489,7 @@ class MainWindow(QWidget):
         self.VBL.addLayout(self.HBL)
         self.VBL.addWidget(self.MovementFeedWidget)
 
-        self.CaptureBTN = QPushButton("Capture")
+        self.CaptureBTN = QPushButton("Recognise")
         self.CaptureBTN.clicked.connect(lambda: self.captureFrame(capture=True))
         
         # Set the style sheet for the button
@@ -558,6 +556,8 @@ class MainWindow(QWidget):
         self.VBL.addLayout(self.HBL)
 
         self.url= self.cameraDic[list(self.cameraDic.keys())[0]][0]['camUrl']
+        self.buttonsAPIDic = self.cameraDic[list(self.cameraDic.keys())[0]][0]['buttonsApi']
+
         # self.url=0  # [FOR PROJECT DEMO]
         self.videoChannel = cv2.VideoCapture(self.url)
         self.Worker = Worker(self.videoChannel, parent=self)
@@ -583,12 +583,9 @@ class MainWindow(QWidget):
 
     def switchButton(self):
         if self.current_index < len(self.number_list):
-            
-            url = 'rtsp://admin:admin123@192.168.1.2:554/H264?ch=5&subtype=0'
-
+            url = self.cameraDic[list(self.cameraDic.keys())[0]][0]['camUrl']
             self.videoChannel = cv2.VideoCapture(url)
             self.current_index += 1
-        
         else: 
             self.current_index = 0
             
@@ -801,7 +798,6 @@ class MainWindow(QWidget):
         # Check if movObj is not None and close it
         if self.movObj:
             self.movObj.close()
-
 
 # Live Streaming worker that runs on another thread
 class Worker(QThread):
