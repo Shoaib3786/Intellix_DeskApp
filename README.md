@@ -11,14 +11,10 @@ Database Integration: Detected faces will be matched against a database to retri
 ## 2. Purpose of the Project
 The facial recognition software has potential applications across multiple domains. Key use cases include:
 
-Preventing Malpractices: Monitoring examination halls to avoid cheating.
-
-Military and Investigation: Useful for high-security investigations and identifying suspects.
-
-Public and Commercial Use:
-
-Identifying individuals in shopping malls, hospitals, classrooms, or at traffic signals.
-
-Providing detailed information about recognized individuals.
+- Preventing Malpractices: Monitoring examination halls to avoid cheating.
+- Military and Investigation: Useful for high-security investigations and identifying suspects.
+- Public and Commercial Use:
+  - Identifying individuals in shopping malls, hospitals, classrooms, or at traffic signals.
+  - Providing detailed information about recognized individuals.
 
 This project’s versatility makes it suitable for various environments and problem-solving scenarios.
