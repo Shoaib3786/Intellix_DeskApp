@@ -1,12 +1,14 @@
 # Intellix_DeskApp
 ## 1. Project Idea
-We are building a facial recognition software with the following key features:
+We build a facial recognition software with the following key features:
 
-Human Facial Detection and Recognition: The software will detect faces in real-time and recognize them.
+- Human Facial Detection and Recognition: The software will detect faces in real-time and recognize them.
 
-Live Camera Integration: The project involves live streaming from a camera feed. During the stream, frames will be captured, and faces will be detected and recognized.
+- Live Camera Integration: The project involves live streaming from a camera feed. During the stream, frames captures, and all the number of faces in the frames are detected and gets recognized.
 
-Database Integration: Detected faces will be matched against a database to retrieve relevant information about the individual.
+- Database Integration: Detected faces matches against a database to retrieve relevant information about the individual.
+  
+- Information Augmentation: Upon recognition, a student's details will be fetched from the database and displayed on the desktop screen alongside their image.
 
 ## 2. Purpose of the Project
 The facial recognition software has potential applications across multiple domains. Key use cases include:
